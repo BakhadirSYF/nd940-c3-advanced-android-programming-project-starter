@@ -7,20 +7,24 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.RadioButton
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.udacity.databinding.ActivityMainBinding
 import com.udacity.databinding.ContentMainBinding
+import com.udacity.viewmodel.DownloadClient
 import com.udacity.viewmodel.MainViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
+import kotlinx.coroutines.Dispatchers
 
 
 class MainActivity : AppCompatActivity() {
@@ -32,17 +36,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var action: NotificationCompat.Action
     private lateinit var viewBinding: ContentMainBinding
 
-    /**
-     * Lazily initialize our [MainViewModel].
-     */
-    private val viewModel: MainViewModel by lazy {
-        val activity = requireNotNull(this) {
-            "You can only access the viewModel after onViewCreated()"
-        }
-        ViewModelProvider(
-            this,
-            MainViewModel.Factory(activity.application)
-        )[MainViewModel::class.java]
+    private val viewModel: MainViewModel by viewModels {
+        MainViewModel.Factory(application)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,7 +48,6 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         registerReceiver(receiver, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
-//        val mainViewModel: MainViewModel by viewModels()
 
         viewBinding = mainBinding.contentMain
 
@@ -66,6 +60,18 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, getString(R.string.select_download_library), Toast.LENGTH_SHORT).show()
             }
         }
+
+        viewModel.retrofitDownloadFile.observe(this, Observer {
+            if(it != null && it.isSuccessful) {
+                viewBinding.customButton.updateProgressAnimation()
+            }
+        })
+
+        viewModel.glideDownloadFile.observe(this, Observer {
+            if(it != null) {
+                viewBinding.customButton.updateProgressAnimation()
+            }
+        })
     }
 
     private fun isRadioButtonChecked(): Boolean {
@@ -82,45 +88,27 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun download() {
-        val request =
-            DownloadManager.Request(Uri.parse(URL))
-                .setTitle(getString(R.string.app_name))
-                .setDescription(getString(R.string.app_description))
-                .setRequiresCharging(false)
-                .setAllowedOverMetered(true)
-                .setAllowedOverRoaming(true)
-
-        val downloadManager = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
-        downloadID =
-            downloadManager.enqueue(request)// enqueue puts the download request in the queue.
-    }
-
     companion object {
         const val URL =
             "https://github.com/udacity/nd940-c3-advanced-android-programming-project-starter/archive/master.zip"
         private const val CHANNEL_ID = "channelId"
     }
 
-    // TODO
     fun onRadioButtonClicked(view: View) {
         if (view is RadioButton) {
-            // Is the button now checked?
             val checked = view.isChecked
-
-            // Check which radio button was clicked
             when (view.getId()) {
                 R.id.radio_button_glide ->
                     if (checked) {
-                        // Pirates are the best
+                        viewModel.setClient(DownloadClient.GLIDE)
                     }
                 R.id.radio_button_dm ->
                     if (checked) {
-                        // Ninjas rule
+                        viewModel.setClient(DownloadClient.DM)
                     }
                 R.id.radio_button_retrofit ->
                     if (checked) {
-                        // Retro rule
+                        viewModel.setClient(DownloadClient.RETROFIT)
                     }
             }
         }
