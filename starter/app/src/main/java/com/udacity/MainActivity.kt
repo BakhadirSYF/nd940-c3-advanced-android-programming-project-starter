@@ -11,7 +11,6 @@ import android.content.IntentFilter
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.RadioButton
 import android.widget.Toast
@@ -20,8 +19,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import com.udacity.databinding.ActivityMainBinding
 import com.udacity.databinding.ContentMainBinding
 import com.udacity.util.sendNotification
@@ -29,7 +26,6 @@ import com.udacity.viewmodel.DownloadClient
 import com.udacity.viewmodel.MainViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
-import kotlinx.coroutines.Dispatchers
 
 
 class MainActivity : AppCompatActivity() {
@@ -40,9 +36,17 @@ class MainActivity : AppCompatActivity() {
     private lateinit var pendingIntent: PendingIntent
     private lateinit var action: NotificationCompat.Action
     private lateinit var viewBinding: ContentMainBinding
+    private lateinit var fileName: String
+    private var downloadStatus: Boolean = false
 
     private val viewModel: MainViewModel by viewModels {
         MainViewModel.Factory(application)
+    }
+
+    companion object {
+        const val URL =
+            "https://github.com/udacity/nd940-c3-advanced-android-programming-project-starter/archive/master.zip"
+        private const val CHANNEL_ID = "channelId"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -70,15 +74,29 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        viewModel.retrofitDownloadFile.observe(this, Observer {
+        viewModel.retrofitDownloadFile.observe(this, {
             if (it != null && it.isSuccessful) {
                 viewBinding.customButton.updateProgressAnimation()
+
+                downloadStatus = it.isSuccessful
+                fileName = getString(R.string.radio_button_retrofit_label)
+                notificationManager.sendNotification(
+                    fileName, downloadStatus,
+                    applicationContext
+                )
             }
         })
 
-        viewModel.glideDownloadFile.observe(this, Observer {
+        viewModel.glideDownloadFile.observe(this, {
             if (it != null) {
                 viewBinding.customButton.updateProgressAnimation()
+
+                downloadStatus = true
+                fileName = getString(R.string.radio_button_glide_label)
+                notificationManager.sendNotification(
+                    fileName, downloadStatus,
+                    applicationContext
+                )
             }
         })
 
@@ -103,7 +121,7 @@ class MainActivity : AppCompatActivity() {
             notificationChannel.enableVibration(true)
             notificationChannel.description = "Time for breakfast"
 
-            val notificationManager = this.getSystemService(
+            notificationManager = this.getSystemService(
                 NotificationManager::class.java
             )
             notificationManager.createNotificationChannel(notificationChannel)
@@ -117,28 +135,18 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val receiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context?, intent: Intent?) {
-            val id = intent?.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
+        override fun onReceive(context: Context, intent: Intent) {
+            val id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
             viewBinding.customButton.updateProgressAnimation()
-//            Toast.makeText(context, "id = $id", Toast.LENGTH_SHORT).show()
 
-
-            val notificationManager = ContextCompat.getSystemService(
-                applicationContext,
-                NotificationManager::class.java
-            ) as NotificationManager
+            downloadStatus = id != -1L
+            fileName = getString(R.string.radio_button_dm_label)
 
             notificationManager.sendNotification(
-                getString(R.string.notification_description),
+                fileName, downloadStatus,
                 applicationContext
             )
         }
-    }
-
-    companion object {
-        const val URL =
-            "https://github.com/udacity/nd940-c3-advanced-android-programming-project-starter/archive/master.zip"
-        private const val CHANNEL_ID = "channelId"
     }
 
     fun onRadioButtonClicked(view: View) {

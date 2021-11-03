@@ -12,9 +12,16 @@ class DetailActivity : AppCompatActivity() {
         setContentView(R.layout.activity_detail)
         setSupportActionBar(toolbar)
 
-        if(intent.hasExtra("intentExtra")) {
-            textView.text = intent.getStringExtra("intentExtra")
+        if (intent.hasExtra(INTENT_EXTRA)) {
+            val bundle = intent.getBundleExtra(INTENT_EXTRA)
+            textView.text = bundle?.getString(FILE_NAME) ?: ""
         }
+    }
+
+    companion object {
+        public const val INTENT_EXTRA = "intentExtra"
+        public const val FILE_NAME = "fileName"
+        public const val STATUS = "status"
     }
 
 }
