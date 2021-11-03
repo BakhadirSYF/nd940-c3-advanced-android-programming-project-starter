@@ -3,18 +3,11 @@ package com.udacity.viewmodel
 import android.app.Application
 import android.app.DownloadManager
 import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
 import android.net.Uri
-import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.*
 import com.bumptech.glide.Glide
-import com.bumptech.glide.GlideBuilder
-import com.bumptech.glide.RequestBuilder
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.FutureTarget
-import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.transition.Transition
 import com.udacity.MainActivity
 import com.udacity.R
 import com.udacity.network.RetrofitApi
@@ -22,7 +15,6 @@ import com.udacity.network.RetrofitClient
 import kotlinx.coroutines.launch
 import okhttp3.ResponseBody
 import retrofit2.Response
-import java.io.File
 
 enum class DownloadClient {
     GLIDE,

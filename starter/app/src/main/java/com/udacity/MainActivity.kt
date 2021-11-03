@@ -1,12 +1,15 @@
 package com.udacity
 
 import android.app.DownloadManager
+import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -15,11 +18,13 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.udacity.databinding.ActivityMainBinding
 import com.udacity.databinding.ContentMainBinding
+import com.udacity.util.sendNotification
 import com.udacity.viewmodel.DownloadClient
 import com.udacity.viewmodel.MainViewModel
 import kotlinx.android.synthetic.main.activity_main.*
@@ -57,21 +62,52 @@ class MainActivity : AppCompatActivity() {
                 viewBinding.customButton.startProgressAnimation()
                 viewModel.download()
             } else {
-                Toast.makeText(this, getString(R.string.select_download_library), Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this,
+                    getString(R.string.select_download_library),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
 
         viewModel.retrofitDownloadFile.observe(this, Observer {
-            if(it != null && it.isSuccessful) {
+            if (it != null && it.isSuccessful) {
                 viewBinding.customButton.updateProgressAnimation()
             }
         })
 
         viewModel.glideDownloadFile.observe(this, Observer {
-            if(it != null) {
+            if (it != null) {
                 viewBinding.customButton.updateProgressAnimation()
             }
         })
+
+        createChannel(
+            getString(R.string.notification_channel_id),
+            getString(R.string.notification_channel_name)
+        )
+    }
+
+    private fun createChannel(channelId: String, channelName: String) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val notificationChannel = NotificationChannel(
+                channelId,
+                channelName,
+                NotificationManager.IMPORTANCE_HIGH
+            )
+
+                .apply { setShowBadge(false) }
+
+            notificationChannel.enableLights(true)
+            notificationChannel.lightColor = Color.RED
+            notificationChannel.enableVibration(true)
+            notificationChannel.description = "Time for breakfast"
+
+            val notificationManager = this.getSystemService(
+                NotificationManager::class.java
+            )
+            notificationManager.createNotificationChannel(notificationChannel)
+        }
     }
 
     private fun isRadioButtonChecked(): Boolean {
@@ -84,7 +120,18 @@ class MainActivity : AppCompatActivity() {
         override fun onReceive(context: Context?, intent: Intent?) {
             val id = intent?.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
             viewBinding.customButton.updateProgressAnimation()
-            Toast.makeText(context, "id = $id", Toast.LENGTH_SHORT).show()
+//            Toast.makeText(context, "id = $id", Toast.LENGTH_SHORT).show()
+
+
+            val notificationManager = ContextCompat.getSystemService(
+                applicationContext,
+                NotificationManager::class.java
+            ) as NotificationManager
+
+            notificationManager.sendNotification(
+                getString(R.string.notification_description),
+                applicationContext
+            )
         }
     }
 
