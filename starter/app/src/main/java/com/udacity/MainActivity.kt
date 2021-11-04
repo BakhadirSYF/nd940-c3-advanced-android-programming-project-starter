@@ -119,7 +119,7 @@ class MainActivity : AppCompatActivity() {
             notificationChannel.enableLights(true)
             notificationChannel.lightColor = Color.RED
             notificationChannel.enableVibration(true)
-            notificationChannel.description = "Time for breakfast"
+            notificationChannel.description = getString(R.string.notification_description)
 
             notificationManager = this.getSystemService(
                 NotificationManager::class.java
