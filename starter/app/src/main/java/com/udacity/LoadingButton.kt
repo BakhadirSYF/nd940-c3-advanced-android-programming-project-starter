@@ -65,7 +65,12 @@ class LoadingButton @JvmOverloads constructor(
         // Draw button label
         paint.color = Color.BLACK
         paint.textAlign = Paint.Align.CENTER
-        canvas.drawText("Download", rectF.centerX(), rectF.centerY(), paint)
+        canvas.drawText(
+            context.getString(R.string.download_button_label),
+            rectF.centerX(),
+            rectF.centerY() + resources.getDimension(R.dimen.default_text_size) / 3,
+            paint
+        )
 
     }
 
@@ -105,7 +110,13 @@ class LoadingButton @JvmOverloads constructor(
         valueAnimator.addUpdateListener {
 //            Log.d("BAKHA_LOG", "valueAnimator animated value = ${it.animatedValue})")
 
-            extraCanvas.drawRect(0f, 0f, it.animatedValue as Float, heightSize.toFloat(), progressColor)
+            extraCanvas.drawRect(
+                0f,
+                0f,
+                it.animatedValue as Float,
+                heightSize.toFloat(),
+                progressColor
+            )
             invalidate()
         }
         valueAnimator.start()

@@ -26,4 +26,5 @@
     <string name="status_failure">Fail</string>
     <string name="cloud_download_description">Placeholder Image</string>
     <string name="status_icon_description">Status Icon</string>
+    <string name="download_button_label">Download</string>
 </resources>
