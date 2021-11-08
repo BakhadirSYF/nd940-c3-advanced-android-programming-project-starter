@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<MotionScene xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!-- Scale animation transition -->
+    <Transition
+        app:autoTransition="animateToEnd"
+        app:constraintSetEnd="@+id/scaleEnd"
+        app:constraintSetStart="@+id/scaleStart"
+        app:duration="1200"
+        app:motionInterpolator="easeInOut">
+
+        <KeyFrameSet>
+            <KeyAttribute
+                android:scaleX="5.0"
+                android:scaleY="5.0"
+                app:framePosition="50"
+                app:motionTarget="@id/statusIcon" />
+        </KeyFrameSet>
+
+        <ConstraintSet android:id="@+id/scaleStart">
+
+            <Constraint
+                android:id="@+id/statusIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </ConstraintSet>
+
+        <ConstraintSet android:id="@+id/scaleEnd">
+            <Constraint
+                android:id="@+id/statusIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </ConstraintSet>
+    </Transition>
+
+    <!-- Move animation transition -->
+    <Transition
+        app:constraintSetEnd="@+id/moveEnd"
+        app:constraintSetStart="@+id/moveStart"
+        app:duration="600"
+        app:motionInterpolator="easeInOut">
+
+        <ConstraintSet android:id="@+id/moveStart">
+            <Constraint
+                android:id="@+id/statusIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </ConstraintSet>
+
+        <ConstraintSet android:id="@+id/moveEnd">
+            <Constraint
+                android:id="@+id/statusIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                app:layout_constraintBottom_toBottomOf="@id/status"
+                app:layout_constraintStart_toEndOf="@id/status"
+                app:layout_constraintTop_toTopOf="@id/status" />
+
+        </ConstraintSet>
+
+    </Transition>
+
+</MotionScene>

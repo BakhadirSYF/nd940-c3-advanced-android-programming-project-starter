@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.motion.widget.MotionLayout
 import kotlinx.android.synthetic.main.activity_detail.*
 import kotlinx.android.synthetic.main.content_detail.*
 
@@ -18,13 +19,46 @@ class DetailActivity : AppCompatActivity() {
             val bundle = intent.getBundleExtra(INTENT_EXTRA)
             fileName.text = bundle?.getString(FILE_NAME) ?: "-"
 
-            val statusText = when (bundle?.getBoolean(STATUS) ?: false) {
-                true -> "Success"
-                else -> "Fail"
+            when (bundle?.getBoolean(STATUS) ?: false) {
+                true -> updateForSuccess()
+                else -> updateForFailure()
+            }
+        }
+
+        motionLayout.setTransitionListener(object : MotionLayout.TransitionListener {
+            override fun onTransitionCompleted(motionLayout: MotionLayout?, id: Int) {
+                if (id == R.id.scaleEnd) {
+                    motionLayout?.setTransition(R.id.moveStart, R.id.moveEnd)
+                    motionLayout?.transitionToEnd()
+                }
             }
 
-            status.text = statusText
-        }
+            override fun onTransitionStarted(p0: MotionLayout?, p1: Int, p2: Int) {
+                // stub
+            }
+
+            override fun onTransitionChange(p0: MotionLayout?, p1: Int, p2: Int, p3: Float) {
+                // stub
+            }
+
+            override fun onTransitionTrigger(p0: MotionLayout?, p1: Int, p2: Boolean, p3: Float) {
+                // stub
+            }
+
+        })
+
+    }
+
+    private fun updateForFailure() {
+        status.text = getString(R.string.status_failure)
+        status.setTextColor(resources.getColor(R.color.red, null))
+        statusIcon.setImageResource(R.drawable.ic_outline_cancel_24)
+    }
+
+    private fun updateForSuccess() {
+        status.text = getString(R.string.status_success)
+        status.setTextColor(resources.getColor(R.color.green, null))
+        statusIcon.setImageResource(R.drawable.ic_outline_check_circle_24)
     }
 
     companion object {
