@@ -36,15 +36,13 @@ class LoadingButton @JvmOverloads constructor(
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.FILL
         textAlign = Paint.Align.CENTER
-        textSize = 45.0f
-//        typeface = Typeface.create("", Typeface.BOLD)
+        textSize = resources.getDimension(R.dimen.default_text_size)
     }
 
 
     init {
         isClickable = true
         Log.d("BAKHA_LOG", "init")
-//        setOnClickListener(this)
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {

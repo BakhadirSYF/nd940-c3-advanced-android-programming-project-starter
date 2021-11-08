@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.motion.widget.MotionLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.motion.widget.MotionLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/motionLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    app:layoutDescription="@xml/detail_motion"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".DetailActivity"
-    tools:showIn="@layout/activity_detail"
-    app:layoutDescription="@xml/detail_motion">
+    tools:showIn="@layout/activity_detail">
 
     <TextView
         android:id="@+id/fileNameLabel"
@@ -17,19 +16,22 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/margin_medium"
         android:layout_marginTop="@dimen/margin_large"
+        android:text="@string/file_name_label"
+        android:textSize="@dimen/default_text_size"
         app:layout_constraintEnd_toStartOf="@+id/guideline"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:text="@string/file_name_label"
         tools:text="File Name" />
 
     <TextView
         android:id="@+id/fileName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:textColor="@color/colorPrimaryDark"
         android:layout_marginStart="@dimen/margin_small"
         android:layout_marginEnd="@dimen/margin_medium"
+        android:textSize="@dimen/default_text_size"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/guideline"
         app:layout_constraintTop_toTopOf="@+id/fileNameLabel"
@@ -55,9 +57,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_large"
+        android:text="@string/status_label"
+        android:textSize="@dimen/default_text_size"
         app:layout_constraintStart_toStartOf="@+id/fileNameLabel"
         app:layout_constraintTop_toBottomOf="@+id/barrier"
-        android:text="@string/status_label"
         tools:text="Status" />
 
     <TextView
@@ -66,6 +69,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/margin_small"
         android:layout_marginEnd="@dimen/margin_medium"
+        android:textSize="@dimen/default_text_size"
         app:layout_constraintStart_toStartOf="@+id/guideline"
         app:layout_constraintTop_toTopOf="@+id/statusLabel"
         tools:text="Success" />
@@ -78,8 +82,10 @@
         android:layout_marginEnd="@dimen/margin_large"
         android:layout_marginBottom="@dimen/margin_large"
         android:backgroundTint="@color/colorAccent"
-        android:text="@string/ok_button_label"
         android:onClick="openMain"
+        android:textSize="@dimen/default_text_size"
+        android:textColor="@color/white"
+        android:text="@string/ok_button_label"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
