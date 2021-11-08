@@ -24,4 +24,6 @@
     <string name="ok_button_label">OK</string>
     <string name="status_success">Success</string>
     <string name="status_failure">Fail</string>
+    <string name="cloud_download_description">Placeholder Image</string>
+    <string name="status_icon_description">Status Icon</string>
 </resources>
