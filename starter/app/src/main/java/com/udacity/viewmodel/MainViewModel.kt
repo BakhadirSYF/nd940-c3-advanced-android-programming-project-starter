@@ -25,6 +25,13 @@ enum class DownloadClient {
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
+    companion object {
+        const val FILE_URL =
+            "https://github.com/udacity/nd940-c3-advanced-android-programming-project-starter/archive/master.zip"
+        const val IMAGE_URL =
+            "https://apod.nasa.gov/apod/image/2110/DarkMatter_KipacAmnh_1200.jpg"
+    }
+
     private val TAG = "MainViewModel"
 
     private val _application = application
@@ -34,7 +41,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val downloadManager =
         application.getSystemService(AppCompatActivity.DOWNLOAD_SERVICE) as DownloadManager
     private val downloadRequest = {
-        DownloadManager.Request(Uri.parse(MainActivity.URL))
+        DownloadManager.Request(Uri.parse(FILE_URL))
             .setTitle(application.getString(R.string.app_name))
             .setDescription(application.getString(R.string.app_description))
             .setRequiresCharging(false)
@@ -74,7 +81,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private fun downloadWithRetrofit() {
         viewModelScope.launch {
             try {
-                _retrofitDownloadFile.value = retrofitApi.downloadFile(MainActivity.URL)
+                _retrofitDownloadFile.value = retrofitApi.downloadFile(FILE_URL)
             } catch (e: Exception) {
                 Log.d(TAG, e.printStackTrace().toString())
             }
@@ -86,7 +93,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             _glideDownloadFile.value = Glide
                 .with(_application.applicationContext)
                 .asBitmap()
-                .load("https://apod.nasa.gov/apod/image/2110/DarkMatter_KipacAmnh_1200.jpg")
+                .load(IMAGE_URL)
                 .submit()
         }
     }

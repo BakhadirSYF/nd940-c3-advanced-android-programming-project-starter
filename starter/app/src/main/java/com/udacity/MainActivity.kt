@@ -27,24 +27,13 @@ import kotlinx.android.synthetic.main.content_main.*
 
 
 class MainActivity : AppCompatActivity() {
-
-    private var downloadID: Long = 0
-
     private lateinit var notificationManager: NotificationManager
-    private lateinit var pendingIntent: PendingIntent
-    private lateinit var action: NotificationCompat.Action
     private lateinit var viewBinding: ContentMainBinding
     private lateinit var fileName: String
     private var downloadStatus: Boolean = false
 
     private val viewModel: MainViewModel by viewModels {
         MainViewModel.Factory(application)
-    }
-
-    companion object {
-        const val URL =
-            "https://github.com/udacity/nd940-c3-advanced-android-programming-project-starter/archive/master.zip"
-        private const val CHANNEL_ID = "channelId"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

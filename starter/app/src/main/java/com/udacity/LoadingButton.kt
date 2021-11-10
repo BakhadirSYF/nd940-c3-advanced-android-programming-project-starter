@@ -32,8 +32,7 @@ class LoadingButton @JvmOverloads constructor(
 
     private val animatorSet: AnimatorSet = AnimatorSet()
 
-    private var buttonState: ButtonState by Delegates.observable<ButtonState>(ButtonState.Completed) { p, old, new ->
-//        Log.d("BAKHA_LOG", "p = $p, old = $old, new = $new")
+    private var buttonState: ButtonState by Delegates.observable(ButtonState.Completed) { p, old, new ->
         when (new) {
             ButtonState.Loading -> {
                 buttonText = context.getString(R.string.loading_button_label)
@@ -60,19 +59,19 @@ class LoadingButton @JvmOverloads constructor(
 
     init {
         isClickable = true
-        Log.d("BAKHA_LOG", "init")
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
-        Log.d("BAKHA_LOG", "onSizeChanged")
+        redrawCanvas()
+        progressCircleSize = (min(w, h) / 2f) * 0.4f
+    }
 
+    private fun redrawCanvas() {
         if (::extraBitmap.isInitialized) extraBitmap.recycle()
         extraBitmap = Bitmap.createBitmap(widthSize, heightSize, Bitmap.Config.ARGB_8888)
         extraCanvas = Canvas(extraBitmap)
         extraCanvas.drawColor(backgroundColor)
-
-        progressCircleSize = (min(w, h) / 2f) * 0.4f
     }
 
     private fun setupCircleF() {
@@ -92,7 +91,6 @@ class LoadingButton @JvmOverloads constructor(
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        Log.d("BAKHA_LOG", "onDraw")
         canvas.drawBitmap(extraBitmap, 0f, 0f, null)
 
         rectF.recalculateAfterOnMeasure(widthSize.toFloat(), heightSize.toFloat())
@@ -117,8 +115,6 @@ class LoadingButton @JvmOverloads constructor(
         widthSize = w
         heightSize = h
         setMeasuredDimension(w, h)
-        Log.d("BAKHA_LOG", "onMeasure")
-//        Log.d("BAKHA_LOG", "widthSize = $widthSize; heightSize = $heightSize")
     }
 
     private fun RectF.recalculateAfterOnMeasure(widthSize: Float, heightSize: Float) {
@@ -129,17 +125,12 @@ class LoadingButton @JvmOverloads constructor(
     }
 
     private fun startProgressAnimation() {
-        Log.d("BAKHA_LOG", "startProgressAnimation()")
         setupCircleF()
         setupProgressAnimators()
         animatorSet.playTogether(linearProgressAnimator, circleProgressAnimator)
         animatorSet.start()
         animatorSet.doOnEnd {
-            Log.d("BAKHA_LOG", "animatorSet.doOnEnd{..}")
-            if (::extraBitmap.isInitialized) extraBitmap.recycle()
-            extraBitmap = Bitmap.createBitmap(widthSize, heightSize, Bitmap.Config.ARGB_8888)
-            extraCanvas = Canvas(extraBitmap)
-            extraCanvas.drawColor(backgroundColor)
+            redrawCanvas()
             buttonText = context.getString(R.string.download_button_label)
             invalidate()
         }
@@ -161,7 +152,6 @@ class LoadingButton @JvmOverloads constructor(
         linearProgressAnimator.duration = 4000
         linearProgressAnimator.interpolator = AccelerateDecelerateInterpolator()
         linearProgressAnimator.addUpdateListener {
-//            Log.d("BAKHA_LOG", "valueAnimator animated value = ${it.animatedValue})")
             extraCanvas.drawRect(
                 0f,
                 0f,
