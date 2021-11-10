@@ -29,7 +29,13 @@
             android:textSize="@dimen/default_text_size"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:defaultBackgroundColor="?attr/colorPrimary"
+            app:defaultLabel="@string/download_button_label"
+            app:loadingLabel="@string/loading_button_label"
+            app:loadingBackgroundColor="?attr/colorPrimaryDark"
+            app:circularLoadingTextColor="?attr/colorAccent"
+            />
 
         <RadioGroup
             android:id="@+id/radioGroup"

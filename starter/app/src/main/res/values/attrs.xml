@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="LoadingButton">
+        <attr name="defaultBackgroundColor" format="color" />
+        <attr name="defaultLabel" format="string" />
+        <attr name="loadingLabel" format="string" />
+        <attr name="loadingBackgroundColor" format="color" />
+        <attr name="circularLoadingTextColor" format="color" />
     </declare-styleable>
 </resources>

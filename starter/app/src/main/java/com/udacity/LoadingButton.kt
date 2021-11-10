@@ -10,6 +10,7 @@ import android.view.View
 import android.view.animation.*
 import androidx.core.animation.doOnEnd
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.content.withStyledAttributes
 import kotlin.math.min
 import kotlin.properties.Delegates
 
@@ -20,7 +21,11 @@ class LoadingButton @JvmOverloads constructor(
     private lateinit var extraCanvas: Canvas
     private lateinit var extraBitmap: Bitmap
 
-    private val backgroundColor = ResourcesCompat.getColor(resources, R.color.colorPrimary, null)
+    private var buttonBackgroundColor = 0
+    private var buttonLoadingBackgroundColor = 0
+    private var circularLoadingColor = 0
+    private var labelDownload = ""
+    private var labelLoading = ""
 
     private var widthSize = 0
     private var heightSize = 0
@@ -35,7 +40,7 @@ class LoadingButton @JvmOverloads constructor(
     private var buttonState: ButtonState by Delegates.observable(ButtonState.Completed) { p, old, new ->
         when (new) {
             ButtonState.Loading -> {
-                buttonText = context.getString(R.string.loading_button_label)
+                buttonText = labelLoading
                 startProgressAnimation()
             }
 
@@ -45,20 +50,28 @@ class LoadingButton @JvmOverloads constructor(
         }
     }
 
-    private var buttonText = context.getString(R.string.download_button_label)
+    private var buttonText = ""
 
     private val rectF: RectF = RectF(0F, 0F, widthSize.toFloat(), heightSize.toFloat())
     private val circleF = RectF()
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.FILL
-        color = Color.BLACK
+        color = Color.WHITE
         textAlign = Paint.Align.CENTER
         textSize = resources.getDimension(R.dimen.default_text_size)
     }
 
     init {
         isClickable = true
+        context.withStyledAttributes(attrs, R.styleable.LoadingButton) {
+            buttonBackgroundColor = getColor(R.styleable.LoadingButton_defaultBackgroundColor, 0)
+            buttonLoadingBackgroundColor = getColor(R.styleable.LoadingButton_loadingBackgroundColor, 0)
+            circularLoadingColor = getColor(R.styleable.LoadingButton_circularLoadingTextColor, 0)
+            labelDownload = getText(R.styleable.LoadingButton_defaultLabel) as String
+            labelLoading = getText(R.styleable.LoadingButton_loadingLabel) as String
+        }
+        buttonText = labelDownload
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -71,7 +84,7 @@ class LoadingButton @JvmOverloads constructor(
         if (::extraBitmap.isInitialized) extraBitmap.recycle()
         extraBitmap = Bitmap.createBitmap(widthSize, heightSize, Bitmap.Config.ARGB_8888)
         extraCanvas = Canvas(extraBitmap)
-        extraCanvas.drawColor(backgroundColor)
+        extraCanvas.drawColor(buttonBackgroundColor)
     }
 
     private fun setupCircleF() {
@@ -131,21 +144,18 @@ class LoadingButton @JvmOverloads constructor(
         animatorSet.start()
         animatorSet.doOnEnd {
             redrawCanvas()
-            buttonText = context.getString(R.string.download_button_label)
+            buttonText = labelDownload
             invalidate()
         }
     }
 
     private fun setupProgressAnimators() {
-        val colorTo = resources.getColor(R.color.colorPrimaryDark, null)
-        val circleColor = resources.getColor(R.color.colorAccent, null)
-
         var progressColor = Paint()
-        progressColor.color = colorTo
+        progressColor.color = buttonLoadingBackgroundColor
 
         val circleProgressColor = Paint(Paint.ANTI_ALIAS_FLAG)
         circleProgressColor.style = Paint.Style.FILL
-        circleProgressColor.color = circleColor
+        circleProgressColor.color = circularLoadingColor
 
 
         linearProgressAnimator = ValueAnimator.ofFloat(0f, widthSize.toFloat())
