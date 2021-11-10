@@ -28,9 +28,9 @@
         android:id="@+id/fileName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textColor="@color/colorPrimaryDark"
         android:layout_marginStart="@dimen/margin_small"
         android:layout_marginEnd="@dimen/margin_medium"
+        android:textColor="@color/colorPrimaryDark"
         android:textSize="@dimen/default_text_size"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/guideline"
@@ -83,16 +83,16 @@
         android:layout_marginBottom="@dimen/margin_large"
         android:backgroundTint="@color/colorAccent"
         android:onClick="openMain"
-        android:textSize="@dimen/default_text_size"
-        android:textColor="@color/white"
         android:text="@string/ok_button_label"
+        android:textColor="@color/white"
+        android:textSize="@dimen/default_text_size"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <ImageView
         android:id="@+id/statusIcon"
-        android:contentDescription="@string/status_icon_description"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/status_icon_description" />
 </androidx.constraintlayout.motion.widget.MotionLayout>
