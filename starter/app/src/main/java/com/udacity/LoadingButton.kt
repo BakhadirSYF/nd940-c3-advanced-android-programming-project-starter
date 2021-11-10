@@ -158,7 +158,7 @@ class LoadingButton @JvmOverloads constructor(
 
 
         linearProgressAnimator = ValueAnimator.ofFloat(0f, widthSize.toFloat())
-        linearProgressAnimator.duration = 8000
+        linearProgressAnimator.duration = 4000
         linearProgressAnimator.interpolator = AccelerateDecelerateInterpolator()
         linearProgressAnimator.addUpdateListener {
 //            Log.d("BAKHA_LOG", "valueAnimator animated value = ${it.animatedValue})")
@@ -173,7 +173,7 @@ class LoadingButton @JvmOverloads constructor(
         }
 
         circleProgressAnimator = ValueAnimator.ofFloat(0f, 360f)
-        circleProgressAnimator.duration = 8000
+        circleProgressAnimator.duration = 4000
         circleProgressAnimator.interpolator = AccelerateDecelerateInterpolator()
         circleProgressAnimator.addUpdateListener {
             extraCanvas.drawArc(
@@ -188,9 +188,9 @@ class LoadingButton @JvmOverloads constructor(
     }
 
     private fun updateProgressAnimation() {
-        linearProgressAnimator.duration = 1000
+        linearProgressAnimator.duration = 2000
         linearProgressAnimator.interpolator = AccelerateInterpolator()
-        circleProgressAnimator.duration = 1000
+        circleProgressAnimator.duration = 2000
         circleProgressAnimator.interpolator = AccelerateInterpolator()
         animatorSet.start()
     }

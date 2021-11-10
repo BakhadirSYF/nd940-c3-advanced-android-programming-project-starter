@@ -23,8 +23,8 @@ fun NotificationManager.sendNotification(
     downloadStatus: Boolean,
     applicationContext: Context
 ) {
-    // Create the intent for the notification, which launches DetailActivity
 
+    // Create the intent for the notification, which launches DetailActivity
     val intent = Intent(applicationContext, DetailActivity::class.java)
     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
     val bundle = Bundle()
@@ -61,11 +61,7 @@ fun NotificationManager.sendNotification(
 
     notify(NOTIFICATION_ID, builder.build())
 }
-/*
-*//**
- * Cancels all notifications.
- *
- *//*
+
 fun NotificationManager.cancelNotifications() {
     cancelAll()
-}*/
+}

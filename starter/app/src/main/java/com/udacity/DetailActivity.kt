@@ -1,10 +1,13 @@
 package com.udacity
 
+import android.app.NotificationManager
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.motion.widget.MotionLayout
+import androidx.core.content.ContextCompat
+import com.udacity.util.cancelNotifications
 import kotlinx.android.synthetic.main.activity_detail.*
 import kotlinx.android.synthetic.main.content_detail.*
 
@@ -14,6 +17,8 @@ class DetailActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail)
         setSupportActionBar(toolbar)
+
+        clearNotification()
 
         if (intent.hasExtra(INTENT_EXTRA)) {
             val bundle = intent.getBundleExtra(INTENT_EXTRA)
@@ -47,6 +52,15 @@ class DetailActivity : AppCompatActivity() {
 
         })
 
+    }
+
+    private fun clearNotification() {
+        val notificationManager =
+            ContextCompat.getSystemService(
+                this,
+                NotificationManager::class.java
+            ) as NotificationManager
+        notificationManager.cancelNotifications()
     }
 
     private fun updateForFailure() {
