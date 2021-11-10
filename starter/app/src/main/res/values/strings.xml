@@ -27,4 +27,5 @@
     <string name="cloud_download_description">Placeholder Image</string>
     <string name="status_icon_description">Status Icon</string>
     <string name="download_button_label">Download</string>
+    <string name="loading_button_label">We are loading</string>
 </resources>

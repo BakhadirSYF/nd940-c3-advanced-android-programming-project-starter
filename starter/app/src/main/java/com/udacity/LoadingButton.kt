@@ -7,6 +7,7 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.View
 import android.view.animation.*
+import androidx.core.animation.doOnEnd
 import androidx.core.content.res.ResourcesCompat
 import kotlin.math.min
 import kotlin.properties.Delegates
@@ -25,10 +26,21 @@ class LoadingButton @JvmOverloads constructor(
 
     private var progressCircleSize = 0f
 
-    private var linearProgressAnimator = ValueAnimator()
+    private var progressAnimator = ValueAnimator()
 
     private var buttonState: ButtonState by Delegates.observable<ButtonState>(ButtonState.Completed) { p, old, new ->
+//        Log.d("BAKHA_LOG", "p = $p, old = $old, new = $new")
+        when (new) {
+            ButtonState.Loading -> {
+                buttonText = context.getString(R.string.loading_button_label)
+                startProgressAnimation()
+            }
 
+            else -> {
+                buttonText = context.getString(R.string.download_button_label)
+                updateProgressAnimation()
+            }
+        }
     }
 
     private var buttonText = context.getString(R.string.download_button_label)
@@ -38,10 +50,10 @@ class LoadingButton @JvmOverloads constructor(
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.FILL
+        color = Color.BLACK
         textAlign = Paint.Align.CENTER
         textSize = resources.getDimension(R.dimen.default_text_size)
     }
-
 
     init {
         isClickable = true
@@ -83,15 +95,12 @@ class LoadingButton @JvmOverloads constructor(
         rectF.recalculateAfterOnMeasure(widthSize.toFloat(), heightSize.toFloat())
 
         // Draw button label
-        paint.color = Color.BLACK
-        paint.textAlign = Paint.Align.CENTER
         canvas.drawText(
             buttonText,
             rectF.centerX(),
             rectF.centerY() + resources.getDimension(R.dimen.default_text_size) / 3,
             paint
         )
-
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -116,11 +125,11 @@ class LoadingButton @JvmOverloads constructor(
         bottom = heightSize
     }
 
-    fun startProgressAnimation() {
-        Log.d("BAKHA_LOG", "onClick")
+    private fun startProgressAnimation() {
+        Log.d("BAKHA_LOG", "startProgressAnimation()")
         setupCircleF()
         setupLinearProgressAnimator()
-        linearProgressAnimator.start()
+        progressAnimator.start()
     }
 
     private fun setupLinearProgressAnimator() {
@@ -135,10 +144,11 @@ class LoadingButton @JvmOverloads constructor(
         circleProgressColor.color = circleColor
 
 
-        linearProgressAnimator = ValueAnimator.ofFloat(0f, widthSize.toFloat())
-        linearProgressAnimator.duration = 8000
-        linearProgressAnimator.interpolator = LinearInterpolator()
-        linearProgressAnimator.addUpdateListener {
+        progressAnimator = ValueAnimator.ofFloat(0f, widthSize.toFloat())
+        progressAnimator.duration = 8000
+        progressAnimator.repeatMode = ValueAnimator.RESTART
+        progressAnimator.interpolator = LinearInterpolator()
+        progressAnimator.addUpdateListener {
 //            Log.d("BAKHA_LOG", "valueAnimator animated value = ${it.animatedValue})")
 
             extraCanvas.drawRect(
@@ -153,10 +163,23 @@ class LoadingButton @JvmOverloads constructor(
 
             invalidate()
         }
+        progressAnimator.doOnEnd {
+            if (::extraBitmap.isInitialized) extraBitmap.recycle()
+            extraBitmap = Bitmap.createBitmap(widthSize, heightSize, Bitmap.Config.ARGB_8888)
+            extraCanvas = Canvas(extraBitmap)
+            extraCanvas.drawColor(backgroundColor)
+        }
     }
 
-    fun updateProgressAnimation() {
-        linearProgressAnimator.duration = 2000
-        linearProgressAnimator.interpolator = AccelerateDecelerateInterpolator()
+    private fun updateProgressAnimation() {
+        progressAnimator.duration = 2000
+        progressAnimator.interpolator = AccelerateInterpolator()
+    }
+
+    fun updateButtonState(state: ButtonState) {
+        if (buttonState != state) {
+            buttonState = state
+            invalidate()
+        }
     }
 }

@@ -17,8 +17,6 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
-import androidx.core.content.ContextCompat
-import androidx.lifecycle.Observer
 import com.udacity.databinding.ActivityMainBinding
 import com.udacity.databinding.ContentMainBinding
 import com.udacity.util.sendNotification
@@ -63,7 +61,7 @@ class MainActivity : AppCompatActivity() {
         viewBinding.customButton.setOnClickListener {
 
             if (isRadioButtonChecked()) {
-                viewBinding.customButton.startProgressAnimation()
+                viewBinding.customButton.updateButtonState(ButtonState.Loading)
                 viewModel.download()
             } else {
                 Toast.makeText(
@@ -76,8 +74,7 @@ class MainActivity : AppCompatActivity() {
 
         viewModel.retrofitDownloadFile.observe(this, {
             if (it != null && it.isSuccessful) {
-                viewBinding.customButton.updateProgressAnimation()
-
+                viewBinding.customButton.updateButtonState(ButtonState.Completed)
                 downloadStatus = it.isSuccessful
                 fileName = getString(R.string.radio_button_retrofit_label)
                 notificationManager.sendNotification(
@@ -89,8 +86,7 @@ class MainActivity : AppCompatActivity() {
 
         viewModel.glideDownloadFile.observe(this, {
             if (it != null) {
-                viewBinding.customButton.updateProgressAnimation()
-
+                viewBinding.customButton.updateButtonState(ButtonState.Completed)
                 downloadStatus = true
                 fileName = getString(R.string.radio_button_glide_label)
                 notificationManager.sendNotification(
@@ -137,7 +133,8 @@ class MainActivity : AppCompatActivity() {
     private val receiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             val id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
-            viewBinding.customButton.updateProgressAnimation()
+            viewBinding.customButton.updateButtonState(ButtonState.Completed)
+//            viewBinding.customButton.updateProgressAnimation()
 
             downloadStatus = id != -1L
             fileName = getString(R.string.radio_button_dm_label)
