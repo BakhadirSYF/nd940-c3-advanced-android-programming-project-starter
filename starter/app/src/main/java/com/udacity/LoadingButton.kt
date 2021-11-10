@@ -1,5 +1,6 @@
 package com.udacity
 
+import android.animation.AnimatorSet
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.*
@@ -26,7 +27,10 @@ class LoadingButton @JvmOverloads constructor(
 
     private var progressCircleSize = 0f
 
-    private var progressAnimator = ValueAnimator()
+    private var linearProgressAnimator = ValueAnimator()
+    private var circleProgressAnimator = ValueAnimator()
+
+    private val animatorSet: AnimatorSet = AnimatorSet()
 
     private var buttonState: ButtonState by Delegates.observable<ButtonState>(ButtonState.Completed) { p, old, new ->
 //        Log.d("BAKHA_LOG", "p = $p, old = $old, new = $new")
@@ -37,7 +41,6 @@ class LoadingButton @JvmOverloads constructor(
             }
 
             else -> {
-                buttonText = context.getString(R.string.download_button_label)
                 updateProgressAnimation()
             }
         }
@@ -128,11 +131,21 @@ class LoadingButton @JvmOverloads constructor(
     private fun startProgressAnimation() {
         Log.d("BAKHA_LOG", "startProgressAnimation()")
         setupCircleF()
-        setupLinearProgressAnimator()
-        progressAnimator.start()
+        setupProgressAnimators()
+        animatorSet.playTogether(linearProgressAnimator, circleProgressAnimator)
+        animatorSet.start()
+        animatorSet.doOnEnd {
+            Log.d("BAKHA_LOG", "animatorSet.doOnEnd{..}")
+            if (::extraBitmap.isInitialized) extraBitmap.recycle()
+            extraBitmap = Bitmap.createBitmap(widthSize, heightSize, Bitmap.Config.ARGB_8888)
+            extraCanvas = Canvas(extraBitmap)
+            extraCanvas.drawColor(backgroundColor)
+            buttonText = context.getString(R.string.download_button_label)
+            invalidate()
+        }
     }
 
-    private fun setupLinearProgressAnimator() {
+    private fun setupProgressAnimators() {
         val colorTo = resources.getColor(R.color.colorPrimaryDark, null)
         val circleColor = resources.getColor(R.color.colorAccent, null)
 
@@ -144,13 +157,11 @@ class LoadingButton @JvmOverloads constructor(
         circleProgressColor.color = circleColor
 
 
-        progressAnimator = ValueAnimator.ofFloat(0f, widthSize.toFloat())
-        progressAnimator.duration = 8000
-        progressAnimator.repeatMode = ValueAnimator.RESTART
-        progressAnimator.interpolator = LinearInterpolator()
-        progressAnimator.addUpdateListener {
+        linearProgressAnimator = ValueAnimator.ofFloat(0f, widthSize.toFloat())
+        linearProgressAnimator.duration = 8000
+        linearProgressAnimator.interpolator = AccelerateDecelerateInterpolator()
+        linearProgressAnimator.addUpdateListener {
 //            Log.d("BAKHA_LOG", "valueAnimator animated value = ${it.animatedValue})")
-
             extraCanvas.drawRect(
                 0f,
                 0f,
@@ -158,22 +169,30 @@ class LoadingButton @JvmOverloads constructor(
                 heightSize.toFloat(),
                 progressColor
             )
-
-            extraCanvas.drawArc(circleF, 0f, it.animatedValue as Float, true, circleProgressColor)
-
             invalidate()
         }
-        progressAnimator.doOnEnd {
-            if (::extraBitmap.isInitialized) extraBitmap.recycle()
-            extraBitmap = Bitmap.createBitmap(widthSize, heightSize, Bitmap.Config.ARGB_8888)
-            extraCanvas = Canvas(extraBitmap)
-            extraCanvas.drawColor(backgroundColor)
+
+        circleProgressAnimator = ValueAnimator.ofFloat(0f, 360f)
+        circleProgressAnimator.duration = 8000
+        circleProgressAnimator.interpolator = AccelerateDecelerateInterpolator()
+        circleProgressAnimator.addUpdateListener {
+            extraCanvas.drawArc(
+                circleF,
+                0f,
+                it.animatedValue as Float,
+                true,
+                circleProgressColor
+            )
+            invalidate()
         }
     }
 
     private fun updateProgressAnimation() {
-        progressAnimator.duration = 2000
-        progressAnimator.interpolator = AccelerateInterpolator()
+        linearProgressAnimator.duration = 1000
+        linearProgressAnimator.interpolator = AccelerateInterpolator()
+        circleProgressAnimator.duration = 1000
+        circleProgressAnimator.interpolator = AccelerateInterpolator()
+        animatorSet.start()
     }
 
     fun updateButtonState(state: ButtonState) {

@@ -4,6 +4,7 @@ import android.app.Application
 import android.app.DownloadManager
 import android.graphics.Bitmap
 import android.net.Uri
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.*
 import com.bumptech.glide.Glide
@@ -23,6 +24,8 @@ enum class DownloadClient {
 }
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
+
+    private val TAG = "MainViewModel"
 
     private val _application = application
 
@@ -70,7 +73,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun downloadWithRetrofit() {
         viewModelScope.launch {
-            _retrofitDownloadFile.value = retrofitApi.downloadFile(MainActivity.URL)
+            try {
+                _retrofitDownloadFile.value = retrofitApi.downloadFile(MainActivity.URL)
+            } catch (e: Exception) {
+                Log.d(TAG, e.printStackTrace().toString())
+            }
         }
     }
 
